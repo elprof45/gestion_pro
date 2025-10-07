@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import ProjectFormServer from '@/components/ProjectFormServer';
 import ProjectsClient from '@/components/ProjectsClient';
 import { getCurrentUser } from '@/lib/session';
+import { SignOut } from '@/components/SignOutButton';
 
 export default async function Page() {
   // données server
@@ -32,32 +33,26 @@ export default async function Page() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">Tableau de bord — Projets</h1>
-          <p className="text-sm text-muted mt-1">Consultez les projets, recherchez et connectez-vous pour contribuer.</p>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="hidden sm:flex items-center gap-4">
-            <div className="text-xs text-muted">Projets</div>
-            <div className="text-lg font-semibold">{totalProjects}</div>
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-3xl font-extrabold tracking-tight">Tableau de bord — Projets</h1>
+            <p className="text-sm text-muted mt-1">Consultez les projets, recherchez et connectez-vous pour contribuer.</p>
           </div>
 
-          {user ? (
-            <div className="flex items-center gap-2">
-              <div className="text-sm text-muted mr-2 hidden sm:block">Connecté en tant que</div>
-              <div className="badge badge-outline">{user.name ?? user.email}</div>
-              <Link href="/projects" className="btn btn-ghost btn-sm">Tous les projets</Link>
-            </div>
-          ) : (
-            <div className="flex gap-2">
-              <Link href="/signin" className="btn btn-primary btn-sm">Se connecter</Link>
-              <Link href="/register" className="btn btn-ghost btn-sm">S'inscrire</Link>
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            {user ? (
+              <div className="flex items-center gap-2">
+                <div className="text-2xl font-extrabold tracking-tight">{user.name ?? user.role}</div>
+                <SignOut />
+              </div>
+            ) : (
+              <div className="flex gap-2">
+                <Link href="/signin" className="btn btn-primary btn-sm">Se connecter</Link>
+                <Link href="/register" className="btn btn-ghost btn-sm">S'inscrire</Link>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
 
       {/* stats pills */}
       <div className="flex gap-3 overflow-x-auto pb-2 mb-6">
@@ -90,9 +85,7 @@ export default async function Page() {
           <div className="sticky top-6 space-y-4">
             <div className="card bg-base-100 p-4 shadow">
               <h2 className="text-lg font-semibold">Créer un projet rapidement</h2>
-              <p className="text-sm text-muted mt-1">Les visiteurs peuvent consulter. Connectez-vous pour créer des projets.</p>
-
-              <div className="mt-4">
+                           <div className="mt-4">
                 {isManagerOrAdmin ? (
                   <ProjectFormServer authors={authors} />
                 ) : user ? (
@@ -113,16 +106,6 @@ export default async function Page() {
                 )}
               </div>
             </div>
-
-            {/* mini-help / legend */}
-            <div className="card bg-base-100 p-4 shadow">
-              <h3 className="text-sm font-medium">Astuce</h3>
-              <ul className="list-disc ml-5 mt-2 text-sm text-muted space-y-1">
-                <li>Utilisez la recherche pour filtrer les projets.</li>
-                <li>Consultez un projet pour voir détails et auteurs.</li>
-                <li>Connectez-vous pour créer, éditer ou supprimer.</li>
-              </ul>
-            </div>
           </div>
         </aside>
 
@@ -132,16 +115,6 @@ export default async function Page() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div>
                 <h2 className="text-lg font-semibold">Projets</h2>
-                <p className="text-sm text-muted">Recherchez et filtrez la liste en temps réel.</p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Link href="/projects" className="btn btn-ghost btn-sm">Tous</Link>
-                {user ? (
-                  <div className="text-sm text-muted hidden sm:block">Connecté: <span className="font-medium">{user.name ?? user.email}</span></div>
-                ) : (
-                  <div className="text-sm text-muted hidden sm:block">Visiteur — connexion recommandée</div>
-                )}
               </div>
             </div>
 
@@ -149,12 +122,6 @@ export default async function Page() {
           </div>
         </section>
       </div>
-
-      {/* Footer small */}
-      <footer className="mt-8 text-center text-xs text-muted">
-        <div>ProjDash — Interface responsive & moderne • Connexion requise pour modifier</div>
-        <div className="mt-2 hidden sm:block">© {new Date().getFullYear()}</div>
-      </footer>
     </div>
   )
 }

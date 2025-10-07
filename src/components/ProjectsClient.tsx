@@ -42,16 +42,16 @@ export default function ProjectsClient({ initialProjects }: { initialProjects: a
   return (
     <div className="space-y-4">
       <div className="flex gap-2 items-center">
-        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Recherche par titre..." className="input input-bordered w-1/2" />
-        <select value={status} onChange={e=>setStatus(e.target.value)} className="select select-bordered">
+        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Recherche par titre..." className="input input-bordered w-1/2" />
+        <select value={status} onChange={e => setStatus(e.target.value)} className="select select-bordered">
           <option value="">Tous status</option>
           <option value="IDEA">IDEA</option>
           <option value="IN_PROGRESS">IN_PROGRESS</option>
           <option value="REVIEW">REVIEW</option>
           <option value="DONE">DONE</option>
         </select>
-        <button className="btn btn-ghost" onClick={() => { setSearch(''); setStatus('') }}>Effacer</button>
-        <div className="ml-auto text-sm text-muted">{loading ? 'Chargement...' : `${projects.length} projet(s)`}</div>
+        <div className="ml-auto text-sm text-muted">{loading ? 'Chargement...' : <button className="btn btn-ghost" onClick={() => { setSearch(''); setStatus('') }}>Effacer</button>
+        }</div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

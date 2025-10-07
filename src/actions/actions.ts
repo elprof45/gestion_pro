@@ -109,7 +109,7 @@ export async function registerUserAction(formData: FormData) {
 
   const hashed = await bcrypt.hash(password, 10)
   const user = await prisma.user.create({
-    data: { name, email, password: hashed, role: 'USER' }
+    data: { name, email, password: hashed, role: 'MANAGER' }
   })
 
   revalidatePath('/')
