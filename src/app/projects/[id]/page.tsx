@@ -31,7 +31,7 @@ export default async function ProjectPage({ params }: { params: { id: string } }
   })
 
   const authors = await prisma.author.findMany()
-  const current = await auth() // { session, user } | null
+  const current = await auth()
   const user = current?.user ? { ...current.user, role: (current.user as any).role } : null
 
   if (!project) {
@@ -75,7 +75,6 @@ export default async function ProjectPage({ params }: { params: { id: string } }
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main detail card */}
         <div className="lg:col-span-2">
           <div className="card bg-base-100 p-6 shadow-md">
             <div className="flex flex-col sm:flex-row sm:justify-between gap-4">
@@ -129,14 +128,11 @@ export default async function ProjectPage({ params }: { params: { id: string } }
             </div>
           </div>
         </div>
-
-        {/* Edit panel (below on mobile, right column on desktop) */}
         <div className="card bg-base-100 p-4 shadow">
           <h2 className="text-lg font-semibold mb-3" id="edit">Éditer / Mettre à jour</h2>
 
           {user ? (
             canEdit ? (
-              // garde le panneau classique si tu veux — sinon tu peux le supprimer
               <ProjectFormServer authors={authors} initial={project} />
             ) : (
               <div className="p-4 rounded bg-base-200">

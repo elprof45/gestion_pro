@@ -1,22 +1,36 @@
-// app/api/projects/route.ts
-import { prisma } from '@/lib/prisma'
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-export async function GET(req: Request){
+export async function GET(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const q = (searchParams.get('search') ?? '').trim();
+    const status = (searchParams.get('status') ?? '').trim();
+    const where: any = {};
 
-  const { searchParams } = new URL(req.url)
-  const q = searchParams.get('search') ?? ''
-  const status = searchParams.get('status') ?? ''
+    if (status && status.toLowerCase() !== 'all') {
+      where.status = status;
+    }
+    if (q) {
+      where.OR = [
+        { title: { contains: q} },
+        { description: { contains: q } },
+      ];
+    }
 
-  const where: any = {}
-  if (q) where.title = { contains: q, mode: 'insensitive' }
-  if (status) where.status = status
+    const projects = await prisma.project.findMany({
+      where,
+      orderBy: { updatedAt: 'desc' },
+      include: { authors: { include: { author: true } } },
+      take: 100,
+    });
 
-  const projects = await prisma.project.findMany({
-    where,
-    orderBy: { updatedAt: 'desc' },
-    include: { authors: { include: { author: true } } },
-    take: 100
-  })
-  return NextResponse.json(projects)
+    return NextResponse.json(projects);
+  } catch (error: any) {
+    console.error('GET /api/projects error:', error);
+    return NextResponse.json(
+      { error: 'Erreur serveur lors de la récupération des projets.' },
+      { status: 500 }
+    );
+  }
 }

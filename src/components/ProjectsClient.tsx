@@ -1,62 +1,148 @@
 'use client'
-import { useEffect, useState } from 'react';
-import ProjectCard from './ProjectCard';
 
-export default function ProjectsClient({ initialProjects }: { initialProjects: any[] }) {
-  const [projects, setProjects] = useState(initialProjects || [])
-  const [search, setSearch] = useState('')
-  const [status, setStatus] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [debounceTimer, setDebounceTimer] = useState<any>(null)
+import { useEffect, useRef, useState } from 'react'
+import ProjectCard from './ProjectCard'
 
+type Projet = any // tu peux remplacer "any" par ton vrai type Prisma (ex: Project)
+
+export default function ProjetsClient({ projetsInitiaux }: { projetsInitiaux: Projet[] }) {
+  // États
+  const [projets, setProjets] = useState<Projet[]>(projetsInitiaux ?? [])
+  const [recherche, setRecherche] = useState<string>('')
+  const [statut, setStatut] = useState<string>('') // '' = tous
+  const [chargement, setChargement] = useState<boolean>(false)
+  const [erreur, setErreur] = useState<string | null>(null)
+
+  // refs pour le debounce et l’annulation de requête
+  const attenteRef = useRef<number | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
+
+  // quand la prop initiale change
   useEffect(() => {
-    setProjects(initialProjects || [])
-  }, [initialProjects])
+    setProjets(projetsInitiaux ?? [])
+  }, [projetsInitiaux])
 
+  // relancer la recherche avec délai (debounce)
   useEffect(() => {
-    // debounced fetch
-    if (debounceTimer) clearTimeout(debounceTimer)
-    const t = setTimeout(() => {
-      fetchProjects()
-    }, 350)
-    setDebounceTimer(t)
-    return () => clearTimeout(t)
-  }, [search, status])
-
-  async function fetchProjects() {
-    setLoading(true)
-    const params = new URLSearchParams()
-    if (search) params.set('search', search)
-    if (status) params.set('status', status)
-    const res = await fetch('/api/projects?' + params.toString())
-    if (res.ok) {
-      const data = await res.json()
-      setProjects(data)
-    } else {
-      // handle error (e.g., not auth)
-      console.error('Erreur recherche projets')
+    if (attenteRef.current) {
+      window.clearTimeout(attenteRef.current)
     }
-    setLoading(false)
+
+    attenteRef.current = window.setTimeout(() => {
+      chargerProjets()
+    }, 350)
+
+    return () => {
+      if (attenteRef.current) {
+        window.clearTimeout(attenteRef.current)
+      }
+      if (abortRef.current) {
+        abortRef.current.abort()
+        abortRef.current = null
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recherche, statut])
+
+  // Fonction principale de récupération depuis l’API
+  async function chargerProjets() {
+    if (abortRef.current) {
+      abortRef.current.abort()
+    }
+    const controller = new AbortController()
+    abortRef.current = controller
+
+    setChargement(true)
+    setErreur(null)
+
+    try {
+      const params = new URLSearchParams()
+      if (recherche) params.set('search', recherche)
+      if (statut) params.set('status', statut)
+
+      const res = await fetch('/api/projects?' + params.toString(), {
+        signal: controller.signal,
+      })
+
+      if (!res.ok) throw new Error(`Erreur réseau ${res.status}`)
+
+      const json = await res.json()
+      const data = Array.isArray(json) ? json : json.data ?? []
+      setProjets(data)
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        console.error(err)
+        setErreur('Impossible de charger les projets.')
+      }
+    } finally {
+      setChargement(false)
+      abortRef.current = null
+    }
+  }
+
+  // Réinitialisation
+  function reinitialiser() {
+    setRecherche('')
+    setStatut('')
+    setProjets(projetsInitiaux ?? [])
+    setErreur(null)
   }
 
   return (
     <div className="space-y-4">
+      {/* Barre de recherche */}
       <div className="flex gap-2 items-center">
-        <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Recherche par titre..." className="input input-bordered w-1/2" />
-        <select value={status} onChange={e => setStatus(e.target.value)} className="select select-bordered">
-          <option value="">Tous status</option>
-          <option value="IDEA">IDEA</option>
-          <option value="IN_PROGRESS">IN_PROGRESS</option>
-          <option value="REVIEW">REVIEW</option>
-          <option value="DONE">DONE</option>
+        <input
+          aria-label="Recherche de projet"
+          value={recherche}
+          onChange={(e) => setRecherche(e.target.value)}
+          placeholder="Rechercher par titre ou description..."
+          className="input input-bordered w-1/2"
+        />
+
+        <select
+          aria-label="Filtrer par statut"
+          value={statut}
+          onChange={(e) => setStatut(e.target.value)}
+          className="select select-bordered"
+        >
+          <option value="">Tous les statuts</option>
+          <option value="IDEA">Idées</option>
+          <option value="IN_PROGRESS">En cours</option>
+          <option value="REVIEW">À revoir</option>
+          <option value="DONE">Terminés</option>
         </select>
-        <div className="ml-auto text-sm text-muted">{loading ? 'Chargement...' : <button className="btn btn-ghost" onClick={() => { setSearch(''); setStatus('') }}>Effacer</button>
-        }</div>
+
+        <div className="ml-auto text-sm text-muted flex items-center gap-2">
+          {chargement ? (
+            <span>Chargement...</span>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={reinitialiser}
+              aria-label="Effacer la recherche"
+            >
+              Effacer
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {projects.map(p => <ProjectCard key={p.id} project={p} />)}
+      {/* Erreur */}
+      {erreur && <div className="text-error">{erreur}</div>}
+
+      {/* Grille de projets */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        {projets.map((p) => (
+          <ProjectCard key={p.id} project={p} />
+        ))}
       </div>
+
+      {/* Aucun résultat */}
+      {!chargement && projets.length === 0 && (
+        <div className="text-center text-muted">Aucun projet trouvé.</div>
+      )}
     </div>
   )
 }
