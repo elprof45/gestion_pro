@@ -6,12 +6,26 @@ Version en ligne : [gestion-pro-4jtq.onrender.com](https://gestion-pro-4jtq.onre
 
 ## 🚀 Description & objectifs
 
-Ce projet est un **dashboard de gestion de projets** où :
+Stack : Next.js 15 (App Router) + Tailwind CSS + DaisyUI + Prisma + NextAuth (Credentials)
+Pattern principal : Server Actions (mutations côté serveur) + composants serveurs pour forms + API sécurisée pour lectures interactives
 
-* Les visiteurs non connectés peuvent **consulter**, **rechercher**, **voir les détails** des projets.
-* Les utilisateurs authentifiés (avec rôles) peuvent créer, modifier ou supprimer des projets selon leurs droits.
+Ce projet est une application complète de gestion de projets (CRUD) pensée pour un usage moderne : UI responsive, séparation claire lecture vs mutation, et sécurité via authentification + rôles.
 
-L’approche technique est moderne, sécurisée et maintenable.
+1. Objectif & approche générale
+
+Toute personne (visiteur) peut consulter, rechercher et voir les détails des projets.
+
+Les actions sensibles (Créer / Mettre à jour / Supprimer) sont réalisées par des Server Actions Next.js côté serveur et sont restreintes par rôle.
+
+L'authentification est assurée par NextAuth (Credentials provider + Prisma); les rôles sont USER, MANAGER, ADMIN.
+
+UI moderne et responsive avec Tailwind CSS + DaisyUI. Les composants UI (cards, forms, table) sont organisés en composants réutilisables.
+
+Le backend est géré par Prisma ORM (Postgres par défaut), schéma type Project, Author, User, ProjectAuthor, etc.
+
+Pourquoi Server Actions ?
+
+Mutations traitées directement côté serveur (pas d'API REST manuelle pour les writes), moins de surface d'attaque, logique d'autorisation centralisée, et revalidatePath() pour rafraîchir SSR.
 
 ---
 
