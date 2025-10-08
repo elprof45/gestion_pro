@@ -108,8 +108,12 @@ export async function registerUserAction(formData: FormData) {
   if (existing) throw new Error('Email déjà utilisé')
 
   const hashed = await bcrypt.hash(password, 10)
-  const user = await prisma.user.create({
+  await prisma.user.create({
     data: { name, email, password: hashed, role: 'MANAGER' }
+  })
+  await prisma.author.createMany({
+    data: { name, email},
+    // skipDuplicates: true
   })
 
   revalidatePath('/')
