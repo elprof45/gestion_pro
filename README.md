@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Projet Gestion Pro
 
-## Getting Started
+Version en ligne : [gestion-pro-4jtq.onrender.com](https://gestion-pro-4jtq.onrender.com)
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Description & objectifs
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ce projet est un **dashboard de gestion de projets** où :
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* Les visiteurs non connectés peuvent **consulter**, **rechercher**, **voir les détails** des projets.
+* Les utilisateurs authentifiés (avec rôles) peuvent créer, modifier ou supprimer des projets selon leurs droits.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+L’approche technique est moderne, sécurisée et maintenable.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Stack principal
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+| Couche                       | Technologie / Librairie                                      |
+| ---------------------------- | ------------------------------------------------------------ |
+| Front-end / Framework        | Next.js 15 (App Router)                                      |
+| Styling / UI                 | Tailwind CSS + DaisyUI                                       |
+| Gestion d’état / Interaction | Composants serveur + client, Server Actions, fetch API       |
+| Backend / ORM                | Prisma + PostgreSQL                     |
+| Authentification             | NextAuth (Credentials provider)                              |
+| Sécurité / Middleware        | Contrôle d’accès par rôle, middleware Next.js                |
+| Déploiement                  | Render (site en ligne), variables d’environnement sécurisées |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## 📐 Pattern & architecture
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* **Server Actions** : toutes les opérations de création / mise à jour / suppression sont réalisées via des actions côté serveur. Pas d’API REST manuelle pour les writes.
+* **Composants serveurs pour les formulaires** : les formulaires sont rendus sur le serveur avec `action={serverAction}`, ce qui permet d’éviter une couche client inutile pour les mutations.
+* **Endpoint GET public** : le module `app/api/projects/route.ts` permet la recherche / filtrage / pagination des projets pour les composants clients.
+* **Middleware de contrôle de rôle** : le middleware inspecte le token NextAuth (JWT) pour rediriger ou interdire l’accès selon le rôle (USER, MANAGER, ADMIN).
+* **Rôles & autorisation** :
+   • `USER` : accès lecture
+   • `MANAGER` : création et modification de projets
+   • `ADMIN` : droits complets, gestion des utilisateurs
+* **Revalidation SSR** : après chaque mutation, on utilise `revalidatePath()` pour rafraîchir le rendu côté serveur automatiquement.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🌱 Futur & roadmap
+
+Voici quelques idées d’évolution pour le projet en ligne :
+
+* Un module d’administration permet de gérer les **utilisateurs**, leurs **rôles**, et de réinitialiser les mots de passe.
+* 🔐 **Reset de mot de passe sécurisé par email / token** — remplacer l’affichage de mot de passe temporaire.
+* 🌐 **OAuth / SSO** — ajouter des providers externes (Google, GitHub, etc.) pour simplifier l’identification.
+* 📶 **Notifications en temps réel** — alertes, websockets / Pusher pour informer des changements de projet.
+* 📊 **Statistiques avancées / dashboard analytics** — graphes, filtrages par période, export CSV / PDF.
+
+---
+
+## ℹ️ Liens utiles
+
+* Site en ligne : [https://gestion-pro-4jtq.onrender.com](https://gestion-pro-4jtq.onrender.com)
+* Base de code : [https://github.com/elprof45/gestion_pro](https://github.com/elprof45/gestion_pro)
+* Documentation Prisma : [https://www.prisma.io/docs](https://www.prisma.io/docs)
+* Documentation NextAuth : [https://next-auth.js.org](https://next-auth.js.org)
