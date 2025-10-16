@@ -64,7 +64,7 @@ export default function RegisterPage() {
             </ActionButton>
           </CardFooter>
         </form>
-        <Link href={'/signin'}>
+        <Link href={'/login'}>
           <Button variant="outline" className="mx-6">
             Se connecter
           </Button>

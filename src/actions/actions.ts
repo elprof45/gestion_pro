@@ -2,7 +2,7 @@
 import { prisma } from '@/lib/prisma';
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
-import { auth, signIn } from "@/lib/auth";
+import { auth, signIn, signOut } from "@/lib/auth";
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
@@ -114,3 +114,7 @@ export async function registerUserAction(formData: FormData) {
   revalidatePath('/')
   redirect('/signin')
 }
+
+  export const handleSignOut = async () => {
+    await signOut()
+  };

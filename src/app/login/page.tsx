@@ -1,14 +1,15 @@
-'use client'
-import React, { useState } from 'react'
-import { signIn } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
+'use client';
+import React, { useState } from 'react';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import Link from 'next/link'
-import ActionButton from '@/components/ui/ActionButton'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import Link from 'next/link';
+import ActionButtonClient from '@/components/ui/ActionButtonClient';
+import { toast } from 'sonner';
 
 export default function SignInPage() {
   const [email, setEmail] = useState('')
@@ -21,8 +22,9 @@ export default function SignInPage() {
     setLoading(true)
     const res = await signIn('credentials', { redirect: false, email, password })
     setLoading(false)
+    console.log(res)
     if (res?.ok) router.push('/')
-    else alert('Échec connexion')
+    else toast("Erreur d'Authentification")
   }
 
   return (
@@ -55,13 +57,13 @@ export default function SignInPage() {
             </div>
           </CardContent>
           <CardFooter className="flex-col gap-2 mt-4">
-            <ActionButton type="submit" className="w-full">
+            <ActionButtonClient loading={loading} type="submit" className="w-full">
               Se connecter
-            </ActionButton>
+            </ActionButtonClient>
 
           </CardFooter>
         </form>
-        <Link href={'/register'}>
+        <Link href={'/signup'}>
         <Button variant="outline" className="mx-6">
           S'inscrire
         </Button>

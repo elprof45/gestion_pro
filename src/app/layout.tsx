@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import FloatingChat from "@/components/FloatingChat";
 import { ThemeProvider } from "@/components/theme-provider";
 import { auth } from "@/lib/auth";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,7 +37,8 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >{children}
-        {!user?.user && <FloatingChat />}
+        {user?.user && <FloatingChat />}
+         <Toaster />
         </ThemeProvider>
       </body>
     </html>

@@ -1,8 +1,13 @@
-"use client";
-import { signOut } from "next-auth/react";
+"use client";;
+import { handleSignOut } from "@/actions/actions";
 import ActionButton from "./ui/ActionButton";
 
 export function SignOut() {
-  return   <ActionButton variant="default" onClick={() => signOut({ callbackUrl: '/' })}>Déconnexion</ActionButton>
-
+  return (
+     <form
+      action={handleSignOut}
+    >
+      <ActionButton type="submit" variant={"default"}>Déconnexion</ActionButton>
+    </form>
+  );
 }

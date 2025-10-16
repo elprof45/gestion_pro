@@ -52,8 +52,8 @@ export default async function Page() {
             </div>
           ) : (
             <div className="flex gap-2">
-              <Link href="/signin" className="btn btn-primary btn-sm">Se connecter</Link>
-              <Link href="/register" className="btn btn-ghost btn-sm">S'inscrire</Link>
+              <Link href="/login" className="btn btn-primary btn-sm">Se connecter</Link>
+              <Link href="/signup" className="btn btn-ghost btn-sm">S'inscrire</Link>
             </div>
           )}
           <ModeToggle/>
