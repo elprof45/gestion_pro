@@ -18,8 +18,6 @@ import {
   PromptInputSubmit,
   PromptInputToolbar,
   PromptInputTools,
-  PromptInputAttachments,
-  PromptInputAttachment,
   PromptInputModelSelect,
   PromptInputModelSelectTrigger,
   PromptInputModelSelectContent,
@@ -31,6 +29,8 @@ import { MessageSquare } from "lucide-react";
 
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Label } from "./ui/label";
+import { Spinner } from "./ui/spinner";
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
@@ -139,7 +139,7 @@ export default function ChatWidget() {
         <Card className="h-full shadow-2xl">
           <div className="flex flex-col h-full">
             {/* Header */}
-            <header className="flex items-center justify-between px-4 py-3 border-b">
+            <header className="flex items-center justify-between px-4 pb-3 border-b">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white flex items-center justify-center font-semibold">AI</div>
                 <div>
@@ -150,12 +150,10 @@ export default function ChatWidget() {
 
               <div className="flex items-center gap-2">
                 {(status === "submitted" || status === "streaming") && (
-                  <Button size="sm" variant="ghost" onClick={() => stop()}>
-                    Stop
-                  </Button>
+                <Spinner  />
                 )}
                 <Button size="sm" variant="ghost" onClick={() => setOpen(false)}>
-                  ✕
+                  X
                 </Button>
               </div>
             </header>
@@ -167,7 +165,7 @@ export default function ChatWidget() {
                   <ConversationEmptyState
                     icon={<MessageSquare className="w-8 h-8" />}
                     title="Aucun message"
-                    description="je suis la pour vous assister dans la gestion de vos projets.demander moi de creer un projet avec titre, description, statut, l'ideée ,la date d'échéance"
+                    description="Bonjour, je suis là pour vous assister dans la gestion de vos projets. Demandez-moi de créer un projet avec titre, description, statut, l'idée, la date d'échéance."
                   />
                 ) : (
                   messages.map((message) => (
@@ -189,8 +187,6 @@ export default function ChatWidget() {
             <div className="px-4 pb-0">
               <PromptInput onSubmit={handleSubmit} className="relative" globalDrop multiple>
                 <PromptInputBody>
-                  <PromptInputAttachments>{(attachment: any) => <PromptInputAttachment data={attachment} />}</PromptInputAttachments>
-
                   <PromptInputTextarea
                     ref={textareaRef}
                     placeholder="Écrire un message... (Entrée pour envoyer, Shift+Entrée pour saut de ligne)"
@@ -209,6 +205,7 @@ export default function ChatWidget() {
                     <PromptInputModelSelect onValueChange={(v) => setModel(v)} value={model} defaultValue="iAme-PRO">
                       <PromptInputModelSelectTrigger />
                       <PromptInputModelSelectContent>
+                        <Label className="px-3 py-1 text-xs text-muted-foreground">iAme-PRO</Label>
                         <PromptInputModelSelectItem value="gpt">iAme-PRO</PromptInputModelSelectItem>
                       </PromptInputModelSelectContent>
                       <PromptInputModelSelectValue />

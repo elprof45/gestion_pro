@@ -20,18 +20,18 @@ async function requireRole(minRole: 'USER' | 'MANAGER' | 'ADMIN') {
 }
 
 export async function createProjectAction(formData: FormData) {
-  await requireRole('MANAGER') // manager+ admin
+  const user = await requireRole('ADMIN') // ADMIN+ admin
   const title = String(formData.get('title') ?? '')
   const description = String(formData.get('description') ?? '')
   const status = String(formData.get('status') ?? 'IDEA')
   const dueDateRaw = formData.get('dueDate')
   const authorIds = formData.getAll('authorIds') as string[]
-
   await prisma.project.create({
     data: {
       title,
       description,
       status: status as any,
+      authorPrincipal: user.name,
       dueDate: dueDateRaw ? new Date(String(dueDateRaw)) : undefined,
       authors: {
         create: authorIds.map((id) => ({ authorId: id }))
@@ -41,11 +41,10 @@ export async function createProjectAction(formData: FormData) {
   })
 
   revalidatePath('/')
-  revalidatePath('/projects')
 }
 
 export async function updateProjectAction(formData: FormData) {
-  await requireRole('MANAGER')
+  await requireRole('ADMIN')
   const id = String(formData.get('id'))
   const title = String(formData.get('title') ?? '')
   const description = String(formData.get('description') ?? '')
@@ -60,19 +59,15 @@ export async function updateProjectAction(formData: FormData) {
     await prisma.projectAuthor.createMany({ data: authorIds.map(a => ({ projectId: id, authorId: a })) })
   }
 
-  revalidatePath('/')
-  revalidatePath('/projects')
   revalidatePath(`/projects/${id}`)
-await prisma.project.findUnique({ where: { id }, include: { authors: { include: { author: true } } } })
 }
 
 export async function deleteProjectAction(formData: FormData) {
-  await requireRole('MANAGER') // suppression réservée aux managers et admins
+  await requireRole('ADMIN') // suppression réservée aux ADMINs et admins
   const id = String(formData.get('id'))
   await prisma.projectAuthor.deleteMany({ where: { projectId: id } })
   await prisma.project.delete({ where: { id } })
-  revalidatePath('/')
-  revalidatePath('/projects')
+   redirect('/')
 }
 
 
@@ -102,17 +97,17 @@ export async function registerUserAction(formData: FormData) {
   const email = String(formData.get('email') ?? '')
   const password = String(formData.get('password') ?? '')
 
-  if (!email || !password) throw new Error('Email / mot de passe requis')
+  if (!email || !password || !name) throw new Error('Email / mot de passe requis')
 
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) throw new Error('Email déjà utilisé')
 
   const hashed = await bcrypt.hash(password, 10)
   await prisma.user.create({
-    data: { name, email, password: hashed, role: 'MANAGER' }
+    data: { name, email, password: hashed, role: 'ADMIN' }
   })
   await prisma.author.createMany({
-    data: { name, email},
+    data: { name, email },
     // skipDuplicates: true
   })
 

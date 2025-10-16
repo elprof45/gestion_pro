@@ -7,6 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Field, FieldGroup, FieldLabel } from './ui/field'
 import { Checkbox } from './ui/checkbox'
 import { Button } from './ui/button'
+import ActionButton from './ui/ActionButton'
 
 
 type Props = {
@@ -119,9 +120,7 @@ export default async function FormulaireProjetServer({ authors, initial }: Props
         <Button type="reset" variant={'secondary'}>
           Annuler
         </Button>
-        <Button type="submit" variant={'default'}>
-          {estEdition ? 'Mettre à jour le projet' : 'Créer le projet'}
-        </Button>
+         <ActionButton >{estEdition ? 'Mettre à jour le projet' : 'Créer le projet'}</ActionButton>
       </div>
     </form>
   )

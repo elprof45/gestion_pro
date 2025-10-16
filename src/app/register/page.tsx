@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import ActionButton from "@/components/ui/ActionButton";
 
 
 export default function RegisterPage() {
@@ -58,15 +59,15 @@ export default function RegisterPage() {
             </div>
           </CardContent>
           <CardFooter className="flex-col gap-2 mt-4">
-            <Button type="submit" className="w-full">
-              {loading ? '...' : "S'inscrire"}
-            </Button>
+            <ActionButton type="submit" className="w-full">
+              S'inscrire
+            </ActionButton>
           </CardFooter>
         </form>
         <Link href={'/signin'}>
           <Button variant="outline" className="mx-6">
             Se connecter
-          </Button>    
+          </Button>
         </Link>
       </Card>
     </div>

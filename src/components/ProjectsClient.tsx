@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Spinner } from './ui/spinner'
 
 type Projet = any // tu peux remplacer "any" par ton vrai type Prisma (ex: Project)
 
@@ -124,8 +125,8 @@ export default function ProjetsClient({ projetsInitiaux }: { projetsInitiaux: Pr
         <div className="ml-auto text-sm text-muted flex items-center gap-2">
           {chargement ? (
             <Badge variant="outline">
-              {/* <Spinner /> */}
-              Chargement...
+              <Spinner />
+              {/* Chargement... */}
             </Badge>
           ) : (
             <Button size="sm" type="button"
@@ -150,7 +151,7 @@ export default function ProjetsClient({ projetsInitiaux }: { projetsInitiaux: Pr
 
       {/* Aucun résultat */}
       {!chargement && projets.length === 0 && (
-        <div className="text-center text-muted">Aucun projet trouvé.</div>
+        <div className="text-center text-muted-foreground">Aucun projet trouvé.</div>
       )}
     </div>
   )

@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 
 export default function ProjectCard({ project }: { project: any }) {
-  const authors = project.authors?.map((pa: any) => pa.author) ?? [];
-
   return (
     <Link
       href={`/projects/${project.id}`}
@@ -25,21 +23,44 @@ export default function ProjectCard({ project }: { project: any }) {
         {/* Titre + statut */}
         <div className="flex justify-between items-start">
           <h3 className="card-title text-lg font-semibold group-hover:text-primary transition-colors">
-            {project.title.length > 30
-              ? project.title.slice(0, 30) + '...'
+            {project.title.length > 10
+              ? project.title.slice(0, 10) + '...'
               : project.title}
           </h3>
-          <div
-            className={`badge p-2 m-2 ${
-              project.status === 'IN_PROGRESS'
-                ? 'bg-yellow-500 text-black'
-                : project.status === 'COMPLETED'
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-500 text-white'
-            }`}
-          >
-            {project.status}
-          </div>
+            {(() => {
+            let statusText = '';
+            let statusColorClass = '';
+
+            switch (project.status) {
+              case 'IN_PROGRESS':
+              statusText = 'En_cours';
+              statusColorClass = 'bg-yellow-500 text-white';
+              break;
+              case 'DONE':
+              statusText = 'Terminés';
+              statusColorClass = 'bg-green-500 text-white';
+              break;
+              case 'IDEA': // Assuming 'PENDING' maps to 'Idées'
+              statusText = 'Idées';
+              statusColorClass = 'bg-blue-500 text-white';
+              break;
+              case 'REVIEW': // Assuming 'REVIEW' maps to 'À revoir'
+              statusText = 'À revoir';
+              statusColorClass = 'bg-orange-500 text-white';
+              break;
+              default:
+              // Fallback for any other status not explicitly handled
+              statusText = project.status; // Displays original status if unknown
+              statusColorClass = 'bg-gray-500 text-white';
+              break;
+            }
+
+            return (
+              <div className={`badge p-2 m-2 text-xs ${statusColorClass}`}>
+              {statusText}
+              </div>
+            );
+            })()}
         </div>
 
         {/* Description */}
@@ -49,15 +70,9 @@ export default function ProjectCard({ project }: { project: any }) {
 
         {/* Auteurs + date */}
         <div className="mt-4 flex items-center gap-2">
-          {authors.slice(0, 2).map((a: any) => (
-            <div
-              key={a.id}
-              className="badge badge-sm badge-neutral bg-base-300 border-none text-xs font-medium px-2"
-            >
-              {a.name.split(' ')[0]}
+            <div className="badge badge-sm badge-neutral bg-base-300 border-none text-xs font-medium px-2">
+              {project.authorPrincipal.split(' ')[0]}
             </div>
-          ))}
-
           <div className="ml-auto text-xs text-muted-foreground italic">
             {project.dueDate
               ? format(new Date(project.dueDate), 'dd/MM/yyyy')
