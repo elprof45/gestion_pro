@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import {revalidatePath} from 'next/cache'
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,6 +24,7 @@ export default function SignInPage() {
     const res = await signIn('credentials', { redirect: false, email, password })
     setLoading(false)
     console.log(res)
+    revalidatePath('/')
     if (res?.ok) router.push('/')
     else toast("Erreur d'Authentification")
   }
