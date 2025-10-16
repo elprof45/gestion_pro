@@ -273,10 +273,10 @@ export default async function ProjectPage({ params,
                 <div className="space-y-3">
                   <p className="text-sm">Pour éditer ce projet, <strong>connectez-vous</strong> ou <strong>créez un compte</strong>.</p>
                   <div className="flex gap-2">
-                    <Link href="/signin">
+                    <Link href="/login">
                       <Button>Se connecter</Button>
                     </Link>
-                    <Link href="/register">
+                    <Link href="/signup">
                       <Button variant="ghost">S'inscrire</Button>
                     </Link>
                   </div>
