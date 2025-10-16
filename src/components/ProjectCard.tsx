@@ -70,7 +70,7 @@ export default function ProjectCard({ project }: { project: any }) {
 
         {/* Auteurs + date */}
         <div className="mt-4 flex items-center gap-2">
-            <div className="badge badge-sm badge-neutral bg-base-300 border-none text-xs font-medium px-2">
+            <div className="badge badge-sm badge-neutral bg-base-300 text-muted-foreground border-none text-xs font-medium px-2">
               {project.authorPrincipal.split(' ')[0]}
             </div>
           <div className="ml-auto text-xs text-muted-foreground italic">
