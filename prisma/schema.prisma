@@ -43,7 +43,7 @@ model Project {
   id          String        @id @default(cuid())
   title       String
   description String?
-  authorPrincipal String?      // id de l'auteur principal (nullable)
+  authorPrincipal String? 
   status      ProjectStatus @default(IDEA)
   dueDate     DateTime?
   createdAt   DateTime      @default(now())
