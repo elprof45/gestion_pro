@@ -112,7 +112,7 @@ export async function registerUserAction(formData: FormData) {
   })
 
   revalidatePath('/')
-  redirect('/signin')
+  redirect('/login')
 }
 
   export const handleSignOut = async () => {
