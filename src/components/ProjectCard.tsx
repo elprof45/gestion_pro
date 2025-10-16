@@ -12,11 +12,9 @@ export default function ProjectCard({ project }: { project: any }) {
         block
         rounded-xl
         border border-base-300
-        bg-base-100
         shadow-md
         hover:shadow-xl
         hover:border-primary/50
-        hover:bg-base-200
         transition-all
         duration-300
         group
@@ -27,15 +25,17 @@ export default function ProjectCard({ project }: { project: any }) {
         {/* Titre + statut */}
         <div className="flex justify-between items-start">
           <h3 className="card-title text-lg font-semibold group-hover:text-primary transition-colors">
-            {project.title}
+            {project.title.length > 30
+              ? project.title.slice(0, 30) + '...'
+              : project.title}
           </h3>
           <div
-            className={`badge ${
-              project.status === 'En cours'
-                ? 'badge-info'
-                : project.status === 'Terminé'
-                ? 'badge-success'
-                : 'badge-outline'
+            className={`badge p-2 m-2 ${
+              project.status === 'IN_PROGRESS'
+                ? 'bg-yellow-500 text-black'
+                : project.status === 'COMPLETED'
+                ? 'bg-green-500 text-white'
+                : 'bg-gray-500 text-white'
             }`}
           >
             {project.status}
@@ -49,10 +49,10 @@ export default function ProjectCard({ project }: { project: any }) {
 
         {/* Auteurs + date */}
         <div className="mt-4 flex items-center gap-2">
-          {authors.slice(0, 3).map((a: any) => (
+          {authors.slice(0, 2).map((a: any) => (
             <div
               key={a.id}
-              className="badge badge-sm badge-neutral bg-base-300 border-none text-xs font-medium"
+              className="badge badge-sm badge-neutral bg-base-300 border-none text-xs font-medium px-2"
             >
               {a.name.split(' ')[0]}
             </div>

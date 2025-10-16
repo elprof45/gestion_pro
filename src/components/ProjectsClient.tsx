@@ -1,7 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import ProjectCard from './ProjectCard'
+import ProjectCard from '@/components/ProjectCard'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
 type Projet = any // tu peux remplacer "any" par ton vrai type Prisma (ex: Project)
 
@@ -91,40 +95,45 @@ export default function ProjetsClient({ projetsInitiaux }: { projetsInitiaux: Pr
   return (
     <div className="space-y-4">
       {/* Barre de recherche */}
-      <div className="flex gap-2 items-center">
-        <input
+      <div className="flex gap-2 items-center w-full justify-items-end ">
+        <Input
           aria-label="Recherche de projet"
           value={recherche}
           onChange={(e) => setRecherche(e.target.value)}
           placeholder="Rechercher par titre ou description..."
-          className="input input-bordered w-1/2"
+          className="w-1/2"
         />
 
-        <select
-          aria-label="Filtrer par statut"
+        <Select
+          defaultValue=""
           value={statut}
-          onChange={(e) => setStatut(e.target.value)}
-          className="select select-bordered"
-        >
-          <option value="">Tous les statuts</option>
-          <option value="IDEA">Idées</option>
-          <option value="IN_PROGRESS">En cours</option>
-          <option value="REVIEW">À revoir</option>
-          <option value="DONE">Terminés</option>
-        </select>
-
+          onValueChange={(status) => setStatut(status)}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Filtrer par statut" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value=" ">Tous les statuts</SelectItem>
+              <SelectItem value="IDEA">Idées</SelectItem>
+              <SelectItem value="IN_PROGRESS">En cours</SelectItem>
+              <SelectItem value="REVIEW">À revoir</SelectItem>
+              <SelectItem value="DONE">Terminés</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <div className="ml-auto text-sm text-muted flex items-center gap-2">
           {chargement ? (
-            <span>Chargement...</span>
+            <Badge variant="outline">
+              {/* <Spinner /> */}
+              Chargement...
+            </Badge>
           ) : (
-            <button
-              type="button"
+            <Button size="sm" type="button"
               className="btn btn-ghost"
               onClick={reinitialiser}
-              aria-label="Effacer la recherche"
-            >
+              aria-label="Effacer la recherche">
               Effacer
-            </button>
+            </Button>
           )}
         </div>
       </div>

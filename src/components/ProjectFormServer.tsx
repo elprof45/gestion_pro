@@ -1,5 +1,13 @@
 import { Author } from '@prisma/client'
-import { createProjectAction, updateProjectAction } from '../actions/actions'
+import { createProjectAction, updateProjectAction } from '@/actions/actions'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Field, FieldGroup, FieldLabel } from './ui/field'
+import { Checkbox } from './ui/checkbox'
+import { Button } from './ui/button'
+
 
 type Props = {
   authors: Author[]
@@ -13,63 +21,60 @@ export default async function FormulaireProjetServer({ authors, initial }: Props
   return (
     <form
       action={action}
-      className="space-y-4 card bg-base-100 p-6 shadow-md rounded-xl border border-base-300"
+      className="space-y-4 card p-6 shadow-md rounded-xl border border-primary/50 "
     >
       {estEdition && (
         <input type="hidden" name="id" defaultValue={initial.id} />
       )}
 
       {/* --- Titre --- */}
-      <div>
-        <label className="label">
-          <span className="label-text font-semibold">Titre du projet</span>
-        </label>
-        <input
-          name="title"
+      <div className="grid w-full max-w-sm items-center gap-3">
+        <Label htmlFor="title"> <span className="font-semibold">Titre du projet</span></Label>
+        <Input id="title" name="title"
           defaultValue={initial?.title ?? ''}
-          className="input input-bordered w-full"
           placeholder="Ex : Nouvelle application mobile"
-          required
-        />
+          required />
       </div>
 
       {/* --- Description --- */}
-      <div>
-        <label className="label">
-          <span className="label-text font-semibold">Description</span>
-        </label>
-        <textarea
-          name="description"
-          defaultValue={initial?.description ?? ''}
-          className="textarea textarea-bordered w-full"
-          placeholder="Décris brièvement le but ou le contenu du projet..."
-          rows={4}
-        />
-      </div>
+      <Label htmlFor="description" className="mb-2">
+        <span className="font-semibold">Description</span>
+      </Label>
+      <Textarea
+        id="description"
+        name="description"
+        defaultValue={initial?.description ?? ""}
+        placeholder="Décris brièvement le but ou le contenu du projet..."
+        rows={4}
+        className="resize-none overflow-auto max-h-32"
+      />
 
       {/* --- Statut et Date --- */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="flex-1">
-          <label className="label">
-            <span className="label-text font-semibold">Statut</span>
-          </label>
-          <select
-            name="status"
-            defaultValue={initial?.status ?? 'IDEA'}
-            className="select select-bordered w-full"
-          >
-            <option value="IDEA">Idée</option>
-            <option value="IN_PROGRESS">En cours</option>
-            <option value="REVIEW">À revoir</option>
-            <option value="DONE">Terminé</option>
-          </select>
+          <Field>
+            <FieldLabel htmlFor="status">
+              Statut
+            </FieldLabel>
+            <Select defaultValue={initial?.status ?? "IDEA"} name="status">
+              <SelectTrigger id="status">
+                <SelectValue placeholder={initial?.status ?? "IDEA"} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="IDEA">Idée</SelectItem>
+                <SelectItem value="IN_PROGRESS">En cours</SelectItem>
+                <SelectItem value="REVIEW">À revoir</SelectItem>
+                <SelectItem value="DONE">Terminé</SelectItem>
+              </SelectContent>
+            </Select>
+          </Field>
         </div>
-
         <div className="flex-1">
-          <label className="label">
-            <span className="label-text font-semibold">Date d’échéance</span>
-          </label>
-          <input
+          <Label htmlFor="date" className="mb-4">
+            <span className="font-semibold">Date d’échéance</span>
+          </Label>
+          <Input
+            id="date"
             type="date"
             name="dueDate"
             defaultValue={
@@ -77,45 +82,46 @@ export default async function FormulaireProjetServer({ authors, initial }: Props
                 ? new Date(initial.dueDate).toISOString().slice(0, 10)
                 : ''
             }
-            className="input input-bordered w-full"
           />
         </div>
       </div>
 
       {/* --- Auteurs --- */}
       <div>
-        <label className="label">
-          <span className="label-text font-semibold">Auteurs associés</span>
-        </label>
+        <Label htmlFor="author" className="mb-4">
+          <span className="font-semibold">Auteurs associés</span>
+        </Label>
         <div className="flex flex-wrap gap-3">
           {authors.map((a) => (
-            <label
-              key={a.id}
-              className="flex items-center gap-2 cursor-pointer select-none"
-            >
-              <input
-                type="checkbox"
-                name="authorIds"
-                value={a.id}
-                defaultChecked={initial?.authors?.some(
-                  (pa: any) => pa.authorId === a.id
-                )}
-                className="checkbox checkbox-sm"
-              />
-              <span>{a.name}</span>
-            </label>
+            <FieldGroup key={a.id}>
+              <Field orientation="horizontal" >
+                <Checkbox
+                  name="authorIds"
+                  value={a.id}
+                  defaultChecked={initial?.authors?.some(
+                    (pa: any) => pa.authorId === a.id
+                  )} />
+                <FieldLabel
+                  htmlFor="checkout-7j9-same-as-shipping-wgm"
+                  className="font-normal"
+                >
+                  {a.name}
+                </FieldLabel>
+              </Field>
+            </FieldGroup>
           ))}
         </div>
+
       </div>
 
       {/* --- Boutons d’action --- */}
       <div className="flex justify-end gap-2 pt-2">
-        <button type="reset" className="btn btn-ghost">
+        <Button type="reset" variant={'secondary'}>
           Annuler
-        </button>
-        <button type="submit" className="btn btn-primary">
+        </Button>
+        <Button type="submit" variant={'default'}>
           {estEdition ? 'Mettre à jour le projet' : 'Créer le projet'}
-        </button>
+        </Button>
       </div>
     </form>
   )

@@ -4,6 +4,7 @@ import ProjectFormServer from '@/components/ProjectFormServer';
 import ProjectsClient from '@/components/ProjectsClient';
 import { getCurrentUser } from '@/lib/session';
 import { SignOut } from '@/components/SignOutButton';
+import { ModeToggle } from '@/components/ToggleTheme';
 
 export default async function Page() {
   const [projects, authors, current] = await Promise.all([
@@ -35,12 +36,12 @@ export default async function Page() {
     { label: 'Terminés', value: statusCount['DONE'] ?? 0, color: 'success' },
   ]
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
+    <div className="max-w-6xl mx-auto px-4 py-6 min-h-screen">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight">Tableau de bord — Projets</h1>
-          <p className="text-sm text-muted mt-1">Consultez les projets, recherchez et connectez-vous pour contribuer.</p>
+          <p className="text-sm mt-1">Consultez les projets, recherchez et connectez-vous pour contribuer.</p>
         </div>
 
         <div className="flex items-center gap-3">
@@ -55,6 +56,7 @@ export default async function Page() {
               <Link href="/register" className="btn btn-ghost btn-sm">S'inscrire</Link>
             </div>
           )}
+          <ModeToggle/>
         </div>
       </div>
       {isManagerOrAdmin && (
@@ -66,8 +68,7 @@ export default async function Page() {
               className="
         rounded-xl
         p-4
-        bg-base-100
-        border border-base-300
+        border border-primary/50 
         shadow-sm
         hover:shadow-lg
         hover:-translate-y-1
@@ -75,13 +76,11 @@ export default async function Page() {
         duration-300
         cursor-pointer
            block
-        hover:border-primary/50
-        hover:bg-base-200
-        group
+        hover:border-primary group
         overflow-hidden
       "
             >
-              <div className="text-xs text-base-content/60 font-medium">
+              <div className="text-xs font-medium">
                 {stat.label}
               </div>
               <div
@@ -103,7 +102,7 @@ export default async function Page() {
         {isManagerOrAdmin && (
           <aside className="hidden lg:block lg:col-span-1">
             <div className="sticky top-6 space-y-4">
-              <div className="card bg-base-100 p-4 shadow">
+              <div className="card p-4 shadow">
                 <h2 className="text-lg font-semibold">Créer un projet rapidement</h2>
                 <div className="mt-4">
                   <ProjectFormServer authors={authors} />
@@ -124,7 +123,7 @@ export default async function Page() {
                 <span className="ml-2 text-sm opacity-60 group-open:rotate-180 transition-transform">▾</span>
               </summary>
 
-              <div id="quick-create-form" className="mt-3 card bg-base-100 p-4 shadow">
+              <div id="quick-create-form" className="mt-3 card p-4 shadow">
                 <ProjectFormServer authors={authors} />
               </div>
             </details>
@@ -133,11 +132,11 @@ export default async function Page() {
 
         {/* Right column: interactive list */}
         <section className={isManagerOrAdmin ? 'lg:col-span-2' : 'lg:col-span-1'}>
-          <div className="card bg-base-100 p-4 shadow">
+          <div className="card p-4 shadow">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
               <div>
                 <h2 className="text-lg font-semibold">Projets</h2>
-                <p className="text-sm text-muted mt-1">Liste des projets (triés par mise à jour).</p>
+                <p className="text-sm text-muted-foreground mt-1">Liste des projets (triés par mise à jour).</p>
               </div>
             </div>
 

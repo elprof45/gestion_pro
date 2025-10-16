@@ -67,7 +67,7 @@ await prisma.project.findUnique({ where: { id }, include: { authors: { include: 
 }
 
 export async function deleteProjectAction(formData: FormData) {
-  await requireRole('ADMIN') // suppression réservée aux admins
+  await requireRole('MANAGER') // suppression réservée aux managers et admins
   const id = String(formData.get('id'))
   await prisma.projectAuthor.deleteMany({ where: { projectId: id } })
   await prisma.project.delete({ where: { id } })

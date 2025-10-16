@@ -10,7 +10,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  // provider  = "postgresql"
+  provider  = "sqlite"
   url  	    = env("DATABASE_URL")
 }
 
@@ -34,12 +35,15 @@ model User {
   password      String?   // hashed password for credentials provider (nullable for OAuth)
   role          Role      @default(USER)
   projectsAuth  ProjectAuthor[]  // relation to projects via ProjectAuthor if needed
+
+  Audit Audit[]
 }
 
 model Project {
   id          String        @id @default(cuid())
   title       String
   description String?
+  authorPrincipal String?      // id de l'auteur principal (nullable)
   status      ProjectStatus @default(IDEA)
   dueDate     DateTime?
   createdAt   DateTime      @default(now())
@@ -63,4 +67,22 @@ model ProjectAuthor {
   role      String?
 
   User User[]
+}
+
+model Audit {
+  id         String   @id @default(cuid())
+  actorId    String?              // id de l'utilisateur qui a déclenché l'action (nullable si système)
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  action     String              // e.g. "createProject", "updateProject", "deleteProject", "createNote"
+  resourceId String?             // id de la ressource affectée (projectId, noteId, ...)
+  resource   String?             // type de ressource (e.g. "Project", "Note")
+  meta       Json?               // données additionnelles structurées (objet)
+  ip         String?             // ip (optionnel)
+  userAgent  String?             // user agent (optionnel)
+  level      String   @default("info") // info|warn|error|audit
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([resourceId])
+  @@index([createdAt])
 }
